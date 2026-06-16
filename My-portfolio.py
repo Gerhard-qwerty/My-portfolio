@@ -166,56 +166,6 @@ def build_landing_page(on_nav):
                         ],
                     ),
                 ),
-                ft.Container(
-                    padding=ft.Padding.symmetric(vertical=40, horizontal=48),
-                    bgcolor=BG_MAIN,
-                    content=ft.Column(
-                        spacing=24,
-                        controls=[
-                            ft.Text("Key Highlights", size=24, weight="bold", color=ft.Colors.WHITE),
-                            ft.Row(
-                                spacing=18,
-                                wrap=True,
-                                controls=[
-                                    ft.Container(
-                                        expand=True,
-                                        padding=24,
-                                        border_radius=8,
-                                        bgcolor=CARD_BG,
-                                        border=ft.Border.all(1, BORDER_COLOR),
-                                        content=ft.Column(
-                                            spacing=12,
-                                            controls=[
-                                                ft.Container(
-                                                    padding=12,
-                                                    border_radius=6,
-                                                    bgcolor=ACCENT_SECONDARY,
-                                                    content=ft.Text(
-                                                        number,
-                                                        size=24,
-                                                        weight="bold",
-                                                        color=ft.Colors.WHITE,
-                                                        text_align="center",
-                                                    )
-                                                ),
-                                                ft.Text(title, size=16, color=ACCENT_PRIMARY, weight="bold"),
-                                                ft.Text(body, size=13, color=TEXT_LIGHT),
-                                            ],
-                                        ),
-                                    )
-                                    for number, title, body in highlights
-                                ],
-                            ),
-                        ]
-                    ),
-                ),
-                build_footer(),
-            ],
-        ),
-        expand=True,
-    )
-
-
 # ============================================================================
 # FOOTER COMPONENT
 # ============================================================================
