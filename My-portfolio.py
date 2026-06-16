@@ -87,86 +87,6 @@ def run_portfolio_app():
 
 
 # ============================================================================
-# LANDING PAGE
-# ============================================================================
-def build_landing_page(on_nav):
-    """Landing page with profile, introduction, and quick highlights."""
-    image_path = os.path.join(os.path.dirname(__file__), "WhatsApp Image 2026-06-13 at 20.14.05.jpeg")
-    image_src = None
-    
-    try:
-        if os.path.exists(image_path):
-            with open(image_path, "rb") as f:
-                encoded = base64.b64encode(f.read()).decode("ascii")
-                image_src = f"data:image/jpeg;base64,{encoded}"
-    except Exception:
-        image_src = None
-
-    highlights = [
-        ("01", "Group 10", "Mining project team contribution."),
-        ("02", "Blast Master Pro", "App work, backend flow, and evidence."),
-        ("03", "Firebase Lead", "Authentication, database, and cloud setup."),
-        ("04", "Reflection", "Progress, learning, and final review."),
-    ]
-
-    return ft.Container(
-        bgcolor=BG_MAIN,
-        content=ft.Column(
-            spacing=0,
-            scroll="auto",
-            controls=[
-                ft.Container(
-                    padding=ft.Padding.symmetric(vertical=60, horizontal=48),
-                    bgcolor=BG_MAIN,
-                    content=ft.Row(
-                        alignment="space_between",
-                        vertical_alignment="center",
-                        spacing=48,
-                        controls=[
-                            ft.Column(
-                                expand=True,
-                                spacing=24,
-                                controls=[
-                                    ft.Text("Gerhard Mangundu", size=48, weight="bold", color=ft.Colors.WHITE),
-                                    ft.Text(
-                                        "Firebase Lead — Group 10 — Blast Master Pro",
-                                        size=18,
-                                        color=ACCENT_SECONDARY,
-                                        weight="600",
-                                    ),
-                                    ft.Divider(color=ACCENT_SECONDARY, height=2),
-                                    ft.Text(
-                                        "This portfolio presents my contribution to the Mining Project for Blast Master Pro. "
-                                        "I led the Firebase infrastructure, managing cloud services, authentication systems, "
-                                        "database architecture, and backend connectivity to ensure reliable app performance.",
-                                        size=16,
-                                        color=TEXT_SECONDARY,
-                                        weight="400",
-                                    ),
-                                    ft.Button(
-                                        "View Project Timeline",
-                                        width=240,
-                                        height=52,
-                                        bgcolor=ACCENT_SECONDARY,
-                                        color=ft.Colors.WHITE,
-                                        style=ft.ButtonStyle(text_style=ft.TextStyle(size=15, weight="bold")),
-                                        on_click=lambda e: on_nav(1),
-                                    ),
-                                ],
-                            ),
-                            ft.Container(
-                                width=360,
-                                height=360,
-                                border_radius=12,
-                                bgcolor=ACCENT_PRIMARY,
-                                border=ft.Border.all(2, ACCENT_SECONDARY),
-                                clip_behavior=ft.ClipBehavior.HARD_EDGE,
-                                content=ft.Image(src=image_src or "", fit="cover", expand=True),
-                            ),
-                        ],
-                    ),
-                ),
-# ============================================================================
 # FOOTER COMPONENT
 # ============================================================================
 def build_footer():
@@ -223,6 +143,133 @@ def status_badge(is_complete: bool, label: str = ""):
                 ft.Text(status_text, size=12, color=ACCENT_SECONDARY, weight="bold")
             ]
         )
+
+
+# ============================================================================
+# LANDING PAGE
+# ============================================================================
+def build_landing_page(on_nav):
+    """Landing page with profile, introduction, and quick highlights."""
+    image_path = os.path.join(os.path.dirname(__file__), "WhatsApp Image 2026-06-13 at 20.14.05.jpeg")
+    image_src = None
+    
+    try:
+        if os.path.exists(image_path):
+            with open(image_path, "rb") as f:
+                encoded = base64.b64encode(f.read()).decode("ascii")
+                image_src = f"data:image/jpeg;base64,{encoded}"
+    except Exception:
+        image_src = None
+
+    highlights = [
+        ("01", "Group 10", "Mining project team contribution."),
+        ("02", "Blast Master Pro", "App work, backend flow, and evidence."),
+        ("03", "Firebase Lead", "Authentication, database, and cloud setup."),
+        ("04", "Reflection", "Progress, learning, and final review."),
+    ]
+
+    highlight_cards = []
+    for num, title, desc in highlights:
+        highlight_cards.append(
+            ft.Container(
+                expand=True,
+                padding=20,
+                border_radius=8,
+                bgcolor=CARD_BG,
+                border=ft.Border.all(1, BORDER_COLOR),
+                content=ft.Column(
+                    spacing=8,
+                    controls=[
+                        ft.Text(num, size=24, weight="bold", color=ACCENT_SECONDARY),
+                        ft.Text(title, size=14, weight="bold", color=ACCENT_PRIMARY),
+                        ft.Text(desc, size=12, color=TEXT_LIGHT),
+                    ]
+                ),
+            )
+        )
+
+    return ft.Container(
+        bgcolor=BG_MAIN,
+        expand=True,
+        content=ft.Column(
+            spacing=0,
+            scroll="auto",
+            controls=[
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=60, horizontal=48),
+                    bgcolor=BG_MAIN,
+                    content=ft.Row(
+                        alignment="space_between",
+                        vertical_alignment="center",
+                        spacing=48,
+                        controls=[
+                            ft.Column(
+                                expand=True,
+                                spacing=24,
+                                controls=[
+                                    ft.Text("Gerhard Mangundu", size=48, weight="bold", color=ft.Colors.WHITE),
+                                    ft.Text(
+                                        "Firebase Lead — Group 10 — Blast Master Pro",
+                                        size=18,
+                                        color=ACCENT_SECONDARY,
+                                        weight="600",
+                                    ),
+                                    ft.Divider(color=ACCENT_SECONDARY, height=2),
+                                    ft.Text(
+                                        "This portfolio presents my contribution to the Mining Project for Blast Master Pro. "
+                                        "I led the Firebase infrastructure, managing cloud services, authentication systems, "
+                                        "database architecture, and backend connectivity to ensure reliable app performance.",
+                                        size=16,
+                                        color=TEXT_SECONDARY,
+                                        weight="400",
+                                    ),
+                                    ft.Button(
+                                        "View Project Timeline",
+                                        width=240,
+                                        height=52,
+                                        bgcolor=ACCENT_SECONDARY,
+                                        color=ft.Colors.WHITE,
+                                        style=ft.ButtonStyle(text_style=ft.TextStyle(size=15, weight="bold")),
+                                        on_click=lambda e: on_nav(1),
+                                    ),
+                                ],
+                            ),
+                            ft.Container(
+                                width=360,
+                                height=360,
+                                border_radius=12,
+                                bgcolor=ACCENT_PRIMARY,
+                                border=ft.Border.all(2, ACCENT_SECONDARY),
+                                clip_behavior=ft.ClipBehavior.HARD_EDGE,
+                                content=ft.Image(src=image_src or "", fit="cover", expand=True),
+                            ),
+                        ],
+                    ),
+                ),
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=40, horizontal=48),
+                    bgcolor=BG_MAIN,
+                    content=ft.Column(
+                        spacing=12,
+                        controls=[
+                            ft.Text("Key Highlights", size=28, weight="bold", color=TEXT_PRIMARY),
+                            ft.Divider(color=ACCENT_SECONDARY, height=2),
+                        ]
+                    ),
+                ),
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=0, horizontal=48),
+                    content=ft.Row(
+                        spacing=14,
+                        wrap=True,
+                        controls=highlight_cards,
+                    ),
+                    expand=True,
+                ),
+                build_footer(),
+            ]
+        ),
+    )
 
 
 # ============================================================================
@@ -728,8 +775,7 @@ def build_github_section(page):
 # SECTION 3: TECHNICAL BLOG
 # ============================================================================
 def build_blog_section():
-    """Reflection journal with video playback."""
-    from flet_video import Video, VideoMedia
+    """Reflection journal with video playback (gracefully handles missing flet_video)."""
     
     blog_file = os.path.join(os.path.dirname(__file__), "blog_posts.json")
     
@@ -776,26 +822,65 @@ def build_blog_section():
                     video_path = os.path.join(os.path.dirname(__file__), "assets", video_file)
                     
                     if os.path.exists(video_path):
-                        video_resource = video_file.replace(os.sep, "/")
-                        card_controls.append(
-                            ft.Container(
-                                height=480,
-                                border_radius=12,
-                                clip_behavior=ft.ClipBehavior.HARD_EDGE,
-                                bgcolor=ft.Colors.BLACK,
-                                border=ft.Border.all(2, ACCENT_SECONDARY),
-                                content=Video(
-                                    playlist=[VideoMedia(video_resource)],
-                                    title=title,
-                                    fit=ft.BoxFit.CONTAIN,
-                                    fill_color=ft.Colors.BLACK,
-                                    autoplay=False,
-                                    muted=False,
-                                    wakelock=True,
-                                    expand=True,
+                        # Try to load Video control with fallback
+                        try:
+                            from flet_video import Video, VideoMedia
+                            video_resource = video_file.replace(os.sep, "/")
+                            card_controls.append(
+                                ft.Container(
+                                    height=480,
+                                    border_radius=12,
+                                    clip_behavior=ft.ClipBehavior.HARD_EDGE,
+                                    bgcolor=ft.Colors.BLACK,
+                                    border=ft.Border.all(2, ACCENT_SECONDARY),
+                                    content=Video(
+                                        playlist=[VideoMedia(video_resource)],
+                                        title=title,
+                                        fit=ft.BoxFit.CONTAIN,
+                                        fill_color=ft.Colors.BLACK,
+                                        autoplay=False,
+                                        muted=False,
+                                        wakelock=True,
+                                        expand=True,
+                                    )
                                 )
                             )
-                        )
+                        except ImportError:
+                            # Fallback if flet_video is not available
+                            card_controls.append(
+                                ft.Container(
+                                    height=220,
+                                    border_radius=12,
+                                    bgcolor=CARD_BG,
+                                    border=ft.Border.all(2, BORDER_COLOR),
+                                    padding=24,
+                                    content=ft.Column(
+                                        alignment="center",
+                                        horizontal_alignment="center",
+                                        spacing=8,
+                                        controls=[
+                                            ft.Icon(ft.Icons.VIDEO_FILE, size=48, color=TEXT_SECONDARY),
+                                            ft.Text(
+                                                "Video Module Not Available",
+                                                size=14,
+                                                weight="bold",
+                                                color=ACCENT_PRIMARY
+                                            ),
+                                            ft.Text(
+                                                f"File: {video_file}",
+                                                size=12,
+                                                color=TEXT_SECONDARY
+                                            ),
+                                            ft.Text(
+                                                "Install: pip install flet-video",
+                                                size=11,
+                                                color=TEXT_LIGHT,
+                                                italic=True
+                                            ),
+                                        ]
+                                    )
+                                )
+                            )
                     else:
                         card_controls.append(
                             ft.Container(
@@ -817,7 +902,7 @@ def build_blog_section():
                                             color=ACCENT_PRIMARY
                                         ),
                                         ft.Text(
-                                            f"File: {video_file}",
+                                            f"Expected: assets/{video_file}",
                                             size=12,
                                             color=TEXT_SECONDARY
                                         ),
