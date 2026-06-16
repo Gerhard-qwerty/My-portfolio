@@ -161,33 +161,6 @@ def build_landing_page(on_nav):
     except Exception:
         image_src = None
 
-    highlights = [
-        ("01", "Group 10", "Mining project team contribution."),
-        ("02", "Blast Master Pro", "App work, backend flow, and evidence."),
-        ("03", "Firebase Lead", "Authentication, database, and cloud setup."),
-        ("04", "Reflection", "Progress, learning, and final review."),
-    ]
-
-    highlight_cards = []
-    for num, title, desc in highlights:
-        highlight_cards.append(
-            ft.Container(
-                expand=True,
-                padding=20,
-                border_radius=8,
-                bgcolor=CARD_BG,
-                border=ft.Border.all(1, BORDER_COLOR),
-                content=ft.Column(
-                    spacing=8,
-                    controls=[
-                        ft.Text(num, size=24, weight="bold", color=ACCENT_SECONDARY),
-                        ft.Text(title, size=14, weight="bold", color=ACCENT_PRIMARY),
-                        ft.Text(desc, size=12, color=TEXT_LIGHT),
-                    ]
-                ),
-            )
-        )
-
     return ft.Container(
         bgcolor=BG_MAIN,
         expand=True,
@@ -245,26 +218,6 @@ def build_landing_page(on_nav):
                             ),
                         ],
                     ),
-                ),
-                ft.Container(
-                    padding=ft.Padding.symmetric(vertical=40, horizontal=48),
-                    bgcolor=BG_MAIN,
-                    content=ft.Column(
-                        spacing=12,
-                        controls=[
-                            ft.Text("Key Highlights", size=28, weight="bold", color=TEXT_PRIMARY),
-                            ft.Divider(color=ACCENT_SECONDARY, height=2),
-                        ]
-                    ),
-                ),
-                ft.Container(
-                    padding=ft.Padding.symmetric(vertical=0, horizontal=48),
-                    content=ft.Row(
-                        spacing=14,
-                        wrap=True,
-                        controls=highlight_cards,
-                    ),
-                    expand=True,
                 ),
                 build_footer(),
             ]
