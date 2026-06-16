@@ -1,0 +1,38 @@
+{
+  "repo": "Group 10 - Blast Master Pro",
+  "repo_url": "",
+  "notes": "Blast Master Pro was a Group 10 Mining project. My individual role was Firebase Lead, which meant I focused on the cloud backend side of the app: Firebase setup, authentication planning, database structure, and helping the team connect app features to stored project data.",
+  "impact_summary": "My Firebase contribution supported the Mining purpose of Blast Master Pro by giving the app a reliable backend foundation. This helped the team manage user access, store important app information, and test the project workflow with clearer data handling.",
+  "commits": [
+    {
+      "title": "Firebase project setup",
+      "details": "Prepared the Firebase environment for Blast Master Pro and checked the service configuration needed for app integration."
+    },
+    {
+      "title": "Authentication support",
+      "details": "Planned and supported the login flow so the app could manage user access in a structured way."
+    },
+    {
+      "title": "Database structure planning",
+      "details": "Helped organize the Firebase data structure for Mining app records, project status information, and team testing needs."
+    },
+    {
+      "title": "Backend connection testing",
+      "details": "Worked with Group 10 to check Firebase connection behavior and support smoother communication between the app and backend."
+    }
+  ],
+  "pull_requests": [
+    {
+      "title": "Firebase lead handoff",
+      "details": "Documented the Firebase setup and backend responsibilities so the team could understand and continue the app integration."
+    },
+    {
+      "title": "Reviewed backend reliability",
+      "details": "Checked authentication and data flow behavior during testing to reduce connection issues in the project."
+    },
+    {
+      "title": "Recorded individual contribution",
+      "details": "Clarified that my individual role in Group 10 was Firebase Lead for Blast Master Pro, focused on backend and cloud support."
+    }
+  ]
+}
