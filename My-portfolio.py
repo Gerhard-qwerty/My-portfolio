@@ -7,16 +7,11 @@ import webbrowser
 from datetime import datetime
 from urllib.parse import quote
 
-import flet
-from flet import (
-    AppBar, Page, Container, Column, Row, Text, TextField, Button,
-    ButtonStyle, TextStyle,
-    Tab, Tabs, TabBar, TabBarView, TabAlignment, ListView, IconButton,
-    Card, Icon, Divider, Checkbox, Image,
-    icons, Colors, border_radius, Padding, Border, MainAxisAlignment, CrossAxisAlignment,
-    ClipBehavior
-)
-from flet_video import Video, VideoMedia
+# NOTE: Flet import sometimes hangs/long-compiles on Python 3.14 in certain envs.
+# This app defers heavy imports until runtime inside run_portfolio_app().
+ft = None  # set inside run_portfolio_app()
+FLET_IMPORTED = False
+
 
 # ============================================================================
 # PROFESSIONAL COLOR SCHEME - Modern Dark with Professional Accents
@@ -66,13 +61,28 @@ def suppress_windows_connection_reset_noise():
 
 
 def run_portfolio_app():
+    """Start the Flet web app.
+
+    Importing many heavy Flet controls at module import-time can be slow/hang on
+    some systems (notably with newer Python versions). Import the full control
+    set lazily when starting the app.
+    """
     suppress_windows_connection_reset_noise()
-    flet.run(
+
+    global ft
+    import flet as ft_module  # lazy import
+    ft = ft_module
+    globals()["flet"] = ft
+
+    global FLET_IMPORTED
+    FLET_IMPORTED = True
+
+    ft.run(
         main,
         before_main=lambda page: suppress_windows_connection_reset_noise(),
-        view=flet.AppView.WEB_BROWSER,
+        view=ft.AppView.WEB_BROWSER,
         assets_dir="assets",
-        port=8550,
+        port=8551,
     )
 
 
@@ -99,33 +109,33 @@ def build_landing_page(on_nav):
         ("04", "Reflection", "Progress, learning, and final review."),
     ]
 
-    return Container(
+    return ft.Container(
         bgcolor=BG_MAIN,
-        content=Column(
+        content=ft.Column(
             spacing=0,
             scroll="auto",
             controls=[
-                Container(
-                    padding=Padding.symmetric(vertical=60, horizontal=48),
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=60, horizontal=48),
                     bgcolor=BG_MAIN,
-                    content=Row(
+                    content=ft.Row(
                         alignment="space_between",
                         vertical_alignment="center",
                         spacing=48,
                         controls=[
-                            Column(
+                            ft.Column(
                                 expand=True,
                                 spacing=24,
                                 controls=[
-                                    Text("Gerhard Mangundu", size=48, weight="bold", color=Colors.WHITE),
-                                    Text(
+                                    ft.Text("Gerhard Mangundu", size=48, weight="bold", color=ft.Colors.WHITE),
+                                    ft.Text(
                                         "Firebase Lead — Group 10 — Blast Master Pro",
                                         size=18,
                                         color=ACCENT_SECONDARY,
                                         weight="600",
                                     ),
-                                    Divider(color=ACCENT_SECONDARY, height=2),
-                                    Text(
+                                    ft.Divider(color=ACCENT_SECONDARY, height=2),
+                                    ft.Text(
                                         "This portfolio presents my contribution to the Mining Project for Blast Master Pro. "
                                         "I led the Firebase infrastructure, managing cloud services, authentication systems, "
                                         "database architecture, and backend connectivity to ensure reliable app performance.",
@@ -133,63 +143,63 @@ def build_landing_page(on_nav):
                                         color=TEXT_SECONDARY,
                                         weight="400",
                                     ),
-                                    Button(
+                                    ft.Button(
                                         "View Project Timeline",
                                         width=240,
                                         height=52,
                                         bgcolor=ACCENT_SECONDARY,
-                                        color=Colors.WHITE,
-                                        style=ButtonStyle(text_style=TextStyle(size=15, weight="bold")),
+                                        color=ft.Colors.WHITE,
+                                        style=ft.ButtonStyle(text_style=ft.TextStyle(size=15, weight="bold")),
                                         on_click=lambda e: on_nav(1),
                                     ),
                                 ],
                             ),
-                            Container(
+                            ft.Container(
                                 width=360,
                                 height=360,
                                 border_radius=12,
                                 bgcolor=ACCENT_PRIMARY,
-                                border=Border.all(2, ACCENT_SECONDARY),
-                                clip_behavior=ClipBehavior.HARD_EDGE,
-                                content=Image(src=image_src or "", fit="cover", expand=True),
+                                border=ft.Border.all(2, ACCENT_SECONDARY),
+                                clip_behavior=ft.ClipBehavior.HARD_EDGE,
+                                content=ft.Image(src=image_src or "", fit="cover", expand=True),
                             ),
                         ],
                     ),
                 ),
-                Container(
-                    padding=Padding.symmetric(vertical=40, horizontal=48),
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=40, horizontal=48),
                     bgcolor=BG_MAIN,
-                    content=Column(
+                    content=ft.Column(
                         spacing=24,
                         controls=[
-                            Text("Key Highlights", size=24, weight="bold", color=Colors.WHITE),
-                            Row(
+                            ft.Text("Key Highlights", size=24, weight="bold", color=ft.Colors.WHITE),
+                            ft.Row(
                                 spacing=18,
                                 wrap=True,
                                 controls=[
-                                    Container(
+                                    ft.Container(
                                         expand=True,
                                         padding=24,
                                         border_radius=8,
                                         bgcolor=CARD_BG,
-                                        border=Border.all(1, BORDER_COLOR),
-                                        content=Column(
+                                        border=ft.Border.all(1, BORDER_COLOR),
+                                        content=ft.Column(
                                             spacing=12,
                                             controls=[
-                                                Container(
+                                                ft.Container(
                                                     padding=12,
                                                     border_radius=6,
                                                     bgcolor=ACCENT_SECONDARY,
-                                                    content=Text(
+                                                    content=ft.Text(
                                                         number,
                                                         size=24,
                                                         weight="bold",
-                                                        color=Colors.WHITE,
+                                                        color=ft.Colors.WHITE,
                                                         text_align="center",
                                                     )
                                                 ),
-                                                Text(title, size=16, color=ACCENT_PRIMARY, weight="bold"),
-                                                Text(body, size=13, color=TEXT_LIGHT),
+                                                ft.Text(title, size=16, color=ACCENT_PRIMARY, weight="bold"),
+                                                ft.Text(body, size=13, color=TEXT_LIGHT),
                                             ],
                                         ),
                                     )
@@ -211,30 +221,30 @@ def build_landing_page(on_nav):
 # ============================================================================
 def build_footer():
     """Reusable footer for all pages"""
-    return Container(
+    return ft.Container(
         bgcolor=FOOTER_BG,
         padding=32,
-        content=Column(
+        content=ft.Column(
             spacing=16,
             controls=[
-                Divider(color=Colors.WHITE10, height=1),
-                Row(
+                ft.Divider(color=ft.Colors.WHITE10, height=1),
+                ft.Row(
                     alignment="space_between",
                     controls=[
-                        Column(
+                        ft.Column(
                             spacing=8,
                             controls=[
-                                Text("Gerhard Mangundu | Portfolio", size=13, weight="bold", color=Colors.WHITE),
-                                Text("Firebase Lead & Project Developer", size=12, color=Colors.WHITE60),
+                                ft.Text("Gerhard Mangundu | Portfolio", size=13, weight="bold", color=ft.Colors.WHITE),
+                                ft.Text("Firebase Lead & Project Developer", size=12, color=ft.Colors.WHITE60),
                             ]
                         ),
-                        Column(
+                        ft.Column(
                             spacing=8,
                             horizontal_alignment="end",
                             controls=[
-                                Text(f"© {datetime.now().year} Gerhard Mangundu. All rights reserved.", 
-                                     size=12, color=Colors.WHITE60),
-                                Text("Group 10 - Blast Master Pro", size=12, color=ACCENT_SECONDARY),
+                                ft.Text(f"© {datetime.now().year} Gerhard Mangundu. All rights reserved.", 
+                                     size=12, color=ft.Colors.WHITE60),
+                                ft.Text("Group 10 - Blast Master Pro", size=12, color=ACCENT_SECONDARY),
                             ]
                         ),
                     ]
@@ -247,20 +257,20 @@ def build_footer():
 def status_badge(is_complete: bool, label: str = ""):
     """Status badge component"""
     if is_complete:
-        return Row(
+        return ft.Row(
             spacing=6,
             controls=[
-                Icon(flet.Icons.CHECK_CIRCLE, color=SUCCESS, size=18),
-                Text("Complete", size=12, color=SUCCESS, weight="bold")
+                ft.Icon(ft.Icons.CHECK_CIRCLE, color=SUCCESS, size=18),
+                ft.Text("Complete", size=12, color=SUCCESS, weight="bold")
             ]
         )
     else:
         status_text = label or "View Details"
-        return Row(
+        return ft.Row(
             spacing=6,
             controls=[
-                Icon(flet.Icons.INFO, color=ACCENT_SECONDARY, size=18),
-                Text(status_text, size=12, color=ACCENT_SECONDARY, weight="bold")
+                ft.Icon(ft.Icons.INFO, color=ACCENT_SECONDARY, size=18),
+                ft.Text(status_text, size=12, color=ACCENT_SECONDARY, weight="bold")
             ]
         )
 
@@ -322,7 +332,7 @@ def build_timeline_section():
         return default_entries
     
     entries = load_timeline()
-    timeline_list = ListView(expand=True, spacing=0, padding=Padding.only(bottom=16))
+    timeline_list = ft.ListView(expand=True, spacing=0, padding=ft.Padding.only(bottom=16))
     type_colors = {
         "Design": ACCENT_SECONDARY,
         "Branding": ACCENT_CYAN,
@@ -342,76 +352,76 @@ def build_timeline_section():
             is_last = i == len(entries) - 1
             
             timeline_list.controls.append(
-                Container(
-                    content=Row(
+                ft.Container(
+                    content=ft.Row(
                         spacing=20,
                         vertical_alignment="start",
                         controls=[
-                            Container(
+                            ft.Container(
                                 width=80,
                                 height=180,
-                                content=Column(
+                                content=ft.Column(
                                     spacing=0,
                                     horizontal_alignment="center",
                                     controls=[
-                                        Container(width=4, height=24, bgcolor=Colors.TRANSPARENT if is_first else BORDER_COLOR),
-                                        Container(
+                                        ft.Container(width=4, height=24, bgcolor=ft.Colors.TRANSPARENT if is_first else BORDER_COLOR),
+                                        ft.Container(
                                             width=60,
                                             height=60,
                                             border_radius=30,
                                             bgcolor=type_color,
-                                            border=Border.all(3, BG_MAIN),
-                                            content=Column(
+                                            border=ft.Border.all(3, BG_MAIN),
+                                            content=ft.Column(
                                                 alignment="center",
                                                 horizontal_alignment="center",
                                                 spacing=0,
                                                 controls=[
-                                                    Text("WEEK", size=9, color=Colors.WHITE, weight="bold"),
-                                                    Text(str(week_num), size=22, color=Colors.WHITE, weight="bold"),
+                                                    ft.Text("WEEK", size=9, color=ft.Colors.WHITE, weight="bold"),
+                                                    ft.Text(str(week_num), size=22, color=ft.Colors.WHITE, weight="bold"),
                                                 ],
                                             ),
                                         ),
-                                        Container(width=4, height=100, bgcolor=Colors.TRANSPARENT if is_last else BORDER_COLOR),
+                                        ft.Container(width=4, height=100, bgcolor=ft.Colors.TRANSPARENT if is_last else BORDER_COLOR),
                                     ],
                                 ),
                             ),
-                            Container(
+                            ft.Container(
                                 expand=True,
-                                margin=Padding.only(top=12, bottom=12),
+                                margin=ft.Padding.only(top=12, bottom=12),
                                 padding=24,
                                 bgcolor=CARD_BG,
                                 border_radius=10,
-                                border=Border.all(1, BORDER_COLOR),
-                                content=Column(
+                                border=ft.Border.all(1, BORDER_COLOR),
+                                content=ft.Column(
                                     spacing=14,
                                     controls=[
-                                        Row(
+                                        ft.Row(
                                             alignment="space_between",
                                             vertical_alignment="start",
                                             controls=[
-                                                Column(
+                                                ft.Column(
                                                     expand=True,
                                                     spacing=8,
                                                     controls=[
-                                                        Text(milestone, size=17, weight="bold", color=ACCENT_PRIMARY),
-                                                        Text(details, size=13, color=TEXT_LIGHT),
+                                                        ft.Text(milestone, size=17, weight="bold", color=ACCENT_PRIMARY),
+                                                        ft.Text(details, size=13, color=TEXT_LIGHT),
                                                     ],
                                                 ),
-                                                Container(
-                                                    padding=Padding.symmetric(vertical=6, horizontal=12),
+                                                ft.Container(
+                                                    padding=ft.Padding.symmetric(vertical=6, horizontal=12),
                                                     border_radius=6,
                                                     bgcolor=type_color,
-                                                    content=Text(work_type.upper(), size=10, color=Colors.WHITE, weight="bold"),
+                                                    content=ft.Text(work_type.upper(), size=10, color=ft.Colors.WHITE, weight="bold"),
                                                 ),
                                             ],
                                         ),
-                                        Divider(color=BORDER_COLOR, height=1),
-                                        Row(
+                                        ft.Divider(color=BORDER_COLOR, height=1),
+                                        ft.Row(
                                             spacing=8,
                                             vertical_alignment="center",
                                             controls=[
-                                                Icon(flet.Icons.CHECK_CIRCLE, color=SUCCESS, size=17),
-                                                Text("Progress evidence recorded", size=12, color=ACCENT_PRIMARY, weight="bold"),
+                                                ft.Icon(ft.Icons.CHECK_CIRCLE, color=SUCCESS, size=17),
+                                                ft.Text("Progress evidence recorded", size=12, color=ACCENT_PRIMARY, weight="bold"),
                                             ],
                                         ),
                                     ],
@@ -426,57 +436,57 @@ def build_timeline_section():
         return sum(1 for entry in entries if entry.get("type", "Work") == work_type)
 
     def metric_card(value, label, color):
-        return Container(
+        return ft.Container(
             expand=True,
             padding=20,
             border_radius=10,
             bgcolor=CARD_BG,
-            border=Border.all(1, BORDER_COLOR),
-            content=Column(
+            border=ft.Border.all(1, BORDER_COLOR),
+            content=ft.Column(
                 spacing=6,
                 controls=[
-                    Text(str(value), size=32, weight="bold", color=color),
-                    Text(label, size=12, color=TEXT_LIGHT, weight="bold"),
+                    ft.Text(str(value), size=32, weight="bold", color=color),
+                    ft.Text(label, size=12, color=TEXT_LIGHT, weight="bold"),
                 ],
             ),
         )
 
     def legend_item(label, color):
-        return Row(
+        return ft.Row(
             spacing=8,
             vertical_alignment="center",
             controls=[
-                Container(width=12, height=12, border_radius=6, bgcolor=color),
-                Text(label, size=12, color=TEXT_SECONDARY, weight="bold"),
+                ft.Container(width=12, height=12, border_radius=6, bgcolor=color),
+                ft.Text(label, size=12, color=TEXT_SECONDARY, weight="bold"),
             ],
         )
     
     refresh_list()
     
-    return Container(
-        content=Column(
+    return ft.Container(
+        content=ft.Column(
             spacing=0,
             scroll="auto",
             controls=[
-                Container(
-                    padding=Padding.symmetric(vertical=40, horizontal=48),
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=40, horizontal=48),
                     bgcolor=BG_MAIN,
-                    content=Column(
+                    content=ft.Column(
                         spacing=12,
                         controls=[
-                            Text("Project Timeline", size=36, weight="bold", color=TEXT_PRIMARY),
-                            Text(
+                            ft.Text("Project Timeline", size=36, weight="bold", color=TEXT_PRIMARY),
+                            ft.Text(
                                 "A detailed progress map showing how the portfolio evolved from planning through to final polish.",
                                 size=15,
                                 color=TEXT_SECONDARY,
                             ),
-                            Divider(color=ACCENT_SECONDARY, height=2),
+                            ft.Divider(color=ACCENT_SECONDARY, height=2),
                         ],
                     ),
                 ),
-                Container(
-                    padding=Padding.symmetric(vertical=0, horizontal=48),
-                    content=Row(
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=0, horizontal=48),
+                    content=ft.Row(
                         spacing=16,
                         controls=[
                             metric_card(len(entries), "Total Milestones", ACCENT_SECONDARY),
@@ -486,14 +496,14 @@ def build_timeline_section():
                         ],
                     ),
                 ),
-                Container(
-                    padding=Padding.symmetric(vertical=32, horizontal=48),
-                    content=Row(
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=32, horizontal=48),
+                    content=ft.Row(
                         alignment="space_between",
                         vertical_alignment="center",
                         controls=[
-                            Text("Weekly Progress", size=20, weight="bold", color=TEXT_PRIMARY),
-                            Row(
+                            ft.Text("Weekly Progress", size=20, weight="bold", color=TEXT_PRIMARY),
+                            ft.Row(
                                 spacing=20,
                                 controls=[
                                     legend_item("Design", ACCENT_SECONDARY),
@@ -504,8 +514,8 @@ def build_timeline_section():
                         ],
                     ),
                 ),
-                Container(
-                    padding=Padding.only(left=48, right=48, bottom=24),
+                ft.Container(
+                    padding=ft.Padding.only(left=48, right=48, bottom=24),
                     content=timeline_list,
                     expand=True
                 ),
@@ -520,7 +530,7 @@ def build_timeline_section():
 # ============================================================================
 # SECTION 2: GITHUB EVIDENCE
 # ============================================================================
-def build_github_section(page: Page):
+def build_github_section(page):
     """Project evidence and design documentation."""
     github_file = os.path.join(os.path.dirname(__file__), "github_evidence.json")
     
@@ -550,28 +560,28 @@ def build_github_section(page: Page):
                 details = ""
 
             rows.append(
-                Container(
+                ft.Container(
                     padding=18,
                     border_radius=8,
                     bgcolor=CARD_BG,
-                    border=Border.all(1, BORDER_COLOR),
-                    content=Row(
+                    border=ft.Border.all(1, BORDER_COLOR),
+                    content=ft.Row(
                         spacing=12,
-                        vertical_alignment=CrossAxisAlignment.START,
+                        vertical_alignment=ft.CrossAxisAlignment.START,
                         controls=[
-                            Container(
+                            ft.Container(
                                 width=36,
                                 height=36,
                                 border_radius=18,
                                 bgcolor=icon_color,
-                                content=Icon(flet.Icons.CHECK, color=Colors.WHITE, size=18),
+                                content=ft.Icon(ft.Icons.CHECK, color=ft.Colors.WHITE, size=18),
                             ),
-                            Column(
+                            ft.Column(
                                 expand=True,
                                 spacing=6,
                                 controls=[
-                                    Text(title, size=14, weight="bold", color=ACCENT_PRIMARY),
-                                    Text(details, size=12, color=TEXT_LIGHT),
+                                    ft.Text(title, size=14, weight="bold", color=ACCENT_PRIMARY),
+                                    ft.Text(details, size=12, color=TEXT_LIGHT),
                                 ]
                             )
                         ]
@@ -584,151 +594,151 @@ def build_github_section(page: Page):
     pr_rows = build_evidence_rows(data.get("pull_requests", []), ACCENT_SECONDARY)
 
     def evidence_section(title, rows, accent_color):
-        return Container(
+        return ft.Container(
             expand=True,
             padding=22,
             border_radius=10,
             bgcolor=CARD_BG,
-            border=Border.all(1, BORDER_COLOR),
-            content=Column(
+            border=ft.Border.all(1, BORDER_COLOR),
+            content=ft.Column(
                 spacing=14,
                 controls=[
-                    Row(
+                    ft.Row(
                         spacing=10,
-                        vertical_alignment=CrossAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
                         controls=[
-                            Container(width=5, height=28, border_radius=3, bgcolor=accent_color),
-                            Text(title, size=17, weight="bold", color=ACCENT_PRIMARY),
+                            ft.Container(width=5, height=28, border_radius=3, bgcolor=accent_color),
+                            ft.Text(title, size=17, weight="bold", color=ACCENT_PRIMARY),
                         ],
                     ),
-                    Column(controls=rows, spacing=10),
+                    ft.Column(controls=rows, spacing=10),
                 ]
             )
         )
 
     if not commit_rows:
         commit_rows = [
-            Container(
+            ft.Container(
                 padding=18,
                 border_radius=8,
                 bgcolor=CARD_BG,
-                border=Border.all(1, BORDER_COLOR),
-                content=Text("Add commit or design evidence here.", size=13, color=TEXT_LIGHT)
+                border=ft.Border.all(1, BORDER_COLOR),
+                content=ft.Text("Add commit or design evidence here.", size=13, color=TEXT_LIGHT)
             )
         ]
 
     if not pr_rows:
         pr_rows = [
-            Container(
+            ft.Container(
                 padding=18,
                 border_radius=8,
                 bgcolor=CARD_BG,
-                border=Border.all(1, BORDER_COLOR),
-                content=Text("Add review or handoff notes here.", size=13, color=TEXT_LIGHT)
+                border=ft.Border.all(1, BORDER_COLOR),
+                content=ft.Text("Add review or handoff notes here.", size=13, color=TEXT_LIGHT)
             )
         ]
 
     def summary_tile(label, value, color):
-        return Container(
+        return ft.Container(
             expand=True,
             padding=20,
             border_radius=10,
             bgcolor=CARD_BG,
-            border=Border.all(1, BORDER_COLOR),
-            content=Column(
+            border=ft.Border.all(1, BORDER_COLOR),
+            content=ft.Column(
                 spacing=6,
                 controls=[
-                    Text(str(value), size=32, weight="bold", color=color),
-                    Text(label, size=12, weight="bold", color=TEXT_LIGHT),
+                    ft.Text(str(value), size=32, weight="bold", color=color),
+                    ft.Text(label, size=12, weight="bold", color=TEXT_LIGHT),
                 ],
             ),
         )
 
     def content_panel(title, body, icon, color):
-        return Container(
+        return ft.Container(
             expand=True,
             padding=24,
             border_radius=10,
             bgcolor=CARD_BG,
-            border=Border.all(1, BORDER_COLOR),
-            content=Column(
+            border=ft.Border.all(1, BORDER_COLOR),
+            content=ft.Column(
                 spacing=12,
                 controls=[
-                    Row(
+                    ft.Row(
                         spacing=10,
-                        vertical_alignment=CrossAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
                         controls=[
-                            Icon(icon, color=color, size=24),
-                            Text(title, size=16, weight="bold", color=ACCENT_PRIMARY),
+                            ft.Icon(icon, color=color, size=24),
+                            ft.Text(title, size=16, weight="bold", color=ACCENT_PRIMARY),
                         ],
                     ),
-                    Text(body or "Add a short summary here.", size=13, color=TEXT_LIGHT),
+                    ft.Text(body or "Add a short summary here.", size=13, color=TEXT_LIGHT),
                 ],
             ),
         )
     
-    return Container(
-        content=Column(
+    return ft.Container(
+        content=ft.Column(
             spacing=0,
             scroll="auto",
             controls=[
-                Container(
-                    padding=Padding.symmetric(vertical=40, horizontal=48),
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=40, horizontal=48),
                     bgcolor=BG_MAIN,
-                    content=Column(
+                    content=ft.Column(
                         spacing=12,
                         controls=[
-                            Text("GitHub Evidence", size=36, weight="bold", color=TEXT_PRIMARY),
-                            Text(
+                            ft.Text("GitHub Evidence", size=36, weight="bold", color=TEXT_PRIMARY),
+                            ft.Text(
                                 "Repository details, contribution evidence, and design documentation.",
                                 size=15,
                                 color=TEXT_SECONDARY,
                             ),
-                            Divider(color=ACCENT_SECONDARY, height=2),
+                            ft.Divider(color=ACCENT_SECONDARY, height=2),
                         ]
                     ),
                 ),
-                Container(
-                    padding=Padding.symmetric(vertical=0, horizontal=48),
-                    content=Column(
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=0, horizontal=48),
+                    content=ft.Column(
                         spacing=20,
                         controls=[
-                            Container(
+                            ft.Container(
                                 padding=24,
                                 border_radius=10,
                                 bgcolor=CARD_BG,
-                                border=Border.all(1, BORDER_COLOR),
-                                content=Row(
+                                border=ft.Border.all(1, BORDER_COLOR),
+                                content=ft.Row(
                                     spacing=18,
-                                    vertical_alignment=CrossAxisAlignment.CENTER,
+                                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
                                     controls=[
-                                        Container(
+                                        ft.Container(
                                             width=56,
                                             height=56,
                                             border_radius=10,
                                             bgcolor=ACCENT_SECONDARY,
-                                            content=Icon(flet.Icons.CODE, color=Colors.WHITE, size=32),
+                                            content=ft.Icon(ft.Icons.CODE, color=ft.Colors.WHITE, size=32),
                                         ),
-                                        Column(
+                                        ft.Column(
                                             expand=True,
                                             spacing=4,
                                             controls=[
-                                                Text("Repository", size=12, weight="bold", color=TEXT_LIGHT),
-                                                Text(repo_value, size=18, weight="bold", color=ACCENT_PRIMARY),
+                                                ft.Text("Repository", size=12, weight="bold", color=TEXT_LIGHT),
+                                                ft.Text(repo_value, size=18, weight="bold", color=ACCENT_PRIMARY),
                                             ],
                                         ),
-                                        Button(
+                                        ft.Button(
                                             "Open GitHub",
-                                            icon=flet.Icons.OPEN_IN_NEW,
+                                            icon=ft.Icons.OPEN_IN_NEW,
                                             url=github_profile,
                                             bgcolor=ACCENT_SECONDARY,
-                                            color=Colors.WHITE,
+                                            color=ft.Colors.WHITE,
                                             height=44,
                                         ),
                                     ],
                                 ),
                             ),
-                            Row(
+                            ft.Row(
                                 spacing=14,
                                 controls=[
                                     summary_tile("Evidence Items", len(commit_rows), SUCCESS),
@@ -736,17 +746,17 @@ def build_github_section(page: Page):
                                     summary_tile("Primary Role", "Firebase", ACCENT_SECONDARY),
                                 ],
                             ),
-                            Row(
+                            ft.Row(
                                 spacing=14,
-                                vertical_alignment=CrossAxisAlignment.START,
+                                vertical_alignment=ft.CrossAxisAlignment.START,
                                 controls=[
-                                    content_panel("Role Summary", notes_value, flet.Icons.DESIGN_SERVICES, ACCENT_SECONDARY),
-                                    content_panel("Impact Summary", impact_value, flet.Icons.INSIGHTS, SUCCESS),
+                                    content_panel("Role Summary", notes_value, ft.Icons.DESIGN_SERVICES, ACCENT_SECONDARY),
+                                    content_panel("Impact Summary", impact_value, ft.Icons.INSIGHTS, SUCCESS),
                                 ],
                             ),
-                            Row(
+                            ft.Row(
                                 spacing=14,
-                                vertical_alignment=CrossAxisAlignment.START,
+                                vertical_alignment=ft.CrossAxisAlignment.START,
                                 controls=[
                                     evidence_section("Design Evidence", commit_rows, SUCCESS),
                                     evidence_section("Review & Handoff", pr_rows, ACCENT_SECONDARY),
@@ -769,6 +779,7 @@ def build_github_section(page: Page):
 # ============================================================================
 def build_blog_section():
     """Reflection journal with video playback."""
+    from flet_video import Video, VideoMedia
     
     blog_file = os.path.join(os.path.dirname(__file__), "blog_posts.json")
     
@@ -782,15 +793,15 @@ def build_blog_section():
         return []
     
     posts = load_posts()
-    posts_list = Column(spacing=24, scroll="auto")
+    posts_list = ft.Column(spacing=24, scroll="auto")
     
     def refresh_posts():
         posts_list.controls.clear()
         if not posts:
             posts_list.controls.append(
-                Container(
+                ft.Container(
                     padding=32,
-                    content=Text(
+                    content=ft.Text(
                         "No reflection entries have been added yet.",
                         size=15, color=TEXT_SECONDARY, italic=True
                     )
@@ -803,12 +814,12 @@ def build_blog_section():
                 description = post.get("description", "")
                 
                 card_controls = [
-                    Text(title, size=22, weight="bold", color=ACCENT_PRIMARY),
+                    ft.Text(title, size=22, weight="bold", color=ACCENT_PRIMARY),
                 ]
                 
                 if description:
                     card_controls.append(
-                        Text(description, size=14, color=TEXT_LIGHT, italic=True)
+                        ft.Text(description, size=14, color=TEXT_LIGHT, italic=True)
                     )
                 
                 if video_file:
@@ -817,17 +828,17 @@ def build_blog_section():
                     if os.path.exists(video_path):
                         video_resource = video_file.replace(os.sep, "/")
                         card_controls.append(
-                            Container(
+                            ft.Container(
                                 height=480,
                                 border_radius=12,
-                                clip_behavior=ClipBehavior.HARD_EDGE,
-                                bgcolor=Colors.BLACK,
-                                border=Border.all(2, ACCENT_SECONDARY),
+                                clip_behavior=ft.ClipBehavior.HARD_EDGE,
+                                bgcolor=ft.Colors.BLACK,
+                                border=ft.Border.all(2, ACCENT_SECONDARY),
                                 content=Video(
                                     playlist=[VideoMedia(video_resource)],
                                     title=title,
-                                    fit=flet.BoxFit.CONTAIN,
-                                    fill_color=Colors.BLACK,
+                                    fit=ft.BoxFit.CONTAIN,
+                                    fill_color=ft.Colors.BLACK,
                                     autoplay=False,
                                     muted=False,
                                     wakelock=True,
@@ -837,25 +848,25 @@ def build_blog_section():
                         )
                     else:
                         card_controls.append(
-                            Container(
+                            ft.Container(
                                 height=220,
                                 border_radius=12,
                                 bgcolor=CARD_BG,
-                                border=Border.all(2, BORDER_COLOR),
+                                border=ft.Border.all(2, BORDER_COLOR),
                                 padding=24,
-                                content=Column(
+                                content=ft.Column(
                                     alignment="center",
                                     horizontal_alignment="center",
                                     spacing=8,
                                     controls=[
-                                        Icon(flet.Icons.VIDEO_FILE, size=48, color=TEXT_SECONDARY),
-                                        Text(
+                                        ft.Icon(ft.Icons.VIDEO_FILE, size=48, color=TEXT_SECONDARY),
+                                        ft.Text(
                                             "Video Not Found",
                                             size=14,
                                             weight="bold",
                                             color=ACCENT_PRIMARY
                                         ),
-                                        Text(
+                                        ft.Text(
                                             f"File: {video_file}",
                                             size=12,
                                             color=TEXT_SECONDARY
@@ -866,25 +877,25 @@ def build_blog_section():
                         )
                 else:
                     card_controls.append(
-                        Container(
+                        ft.Container(
                             height=220,
                             border_radius=12,
                             bgcolor=CARD_BG,
-                            border=Border.all(2, BORDER_COLOR),
+                            border=ft.Border.all(2, BORDER_COLOR),
                             padding=24,
-                            content=Column(
+                            content=ft.Column(
                                 alignment="center",
                                 horizontal_alignment="center",
                                 spacing=8,
                                 controls=[
-                                    Icon(flet.Icons.VIDEO_LIBRARY, size=48, color=TEXT_SECONDARY),
-                                    Text(
+                                    ft.Icon(ft.Icons.VIDEO_LIBRARY, size=48, color=TEXT_SECONDARY),
+                                    ft.Text(
                                         "Video Coming Soon",
                                         size=14,
                                         weight="bold",
                                         color=ACCENT_PRIMARY
                                     ),
-                                    Text(
+                                    ft.Text(
                                         "A project reflection video will appear here",
                                         size=12,
                                         color=TEXT_LIGHT
@@ -895,12 +906,12 @@ def build_blog_section():
                     )
                 
                 posts_list.controls.append(
-                    Container(
+                    ft.Container(
                         padding=24,
                         border_radius=12,
                         bgcolor=CARD_BG,
-                        border=Border.all(1, BORDER_COLOR),
-                        content=Column(
+                        border=ft.Border.all(1, BORDER_COLOR),
+                        content=ft.Column(
                             spacing=18,
                             controls=card_controls
                         )
@@ -909,26 +920,26 @@ def build_blog_section():
     
     refresh_posts()
     
-    return Container(
-        content=Column(
+    return ft.Container(
+        content=ft.Column(
             spacing=0,
             scroll="auto",
             controls=[
-                Container(
-                    padding=Padding.symmetric(vertical=40, horizontal=48),
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=40, horizontal=48),
                     bgcolor=BG_MAIN,
-                    content=Column(
+                    content=ft.Column(
                         spacing=12,
                         controls=[
-                            Text("Reflection Journal", size=36, weight="bold", color=TEXT_PRIMARY),
-                            Text("Project insights, learning notes, and video evidence",
+                            ft.Text("Reflection Journal", size=36, weight="bold", color=TEXT_PRIMARY),
+                            ft.Text("Project insights, learning notes, and video evidence",
                                  size=15, color=TEXT_SECONDARY),
-                            Divider(color=ACCENT_SECONDARY, height=2),
+                            ft.Divider(color=ACCENT_SECONDARY, height=2),
                         ]
                     )
                 ),
-                Container(
-                    padding=Padding.symmetric(vertical=0, horizontal=48),
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=0, horizontal=48),
                     content=posts_list,
                     expand=True,
                 ),
@@ -957,44 +968,44 @@ def build_matlab_section():
     certificate_cards = []
     for title, image_file, pdf_file in certificates:
         certificate_cards.append(
-            Container(
+            ft.Container(
                 width=540,
                 padding=16,
                 border_radius=10,
                 bgcolor=CARD_BG,
-                border=Border.all(1, BORDER_COLOR),
-                content=Column(
+                border=ft.Border.all(1, BORDER_COLOR),
+                content=ft.Column(
                     spacing=14,
                     controls=[
-                        Container(
+                        ft.Container(
                             height=340,
                             border_radius=8,
-                            clip_behavior=ClipBehavior.ANTI_ALIAS,
+                            clip_behavior=ft.ClipBehavior.ANTI_ALIAS,
                             bgcolor=BG_SECONDARY,
-                            content=Image(
+                            content=ft.Image(
                                 src=image_file,
                                 fit="contain",
                                 expand=True,
                             ),
                         ),
-                        Row(
+                        ft.Row(
                             spacing=12,
-                            vertical_alignment=CrossAxisAlignment.CENTER,
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER,
                             controls=[
-                                Text(
+                                ft.Text(
                                     title,
                                     size=14,
                                     weight="bold",
                                     color=ACCENT_PRIMARY,
                                     expand=True,
                                 ),
-                                Button(
+                                ft.Button(
                                     "View PDF",
-                                    icon=flet.Icons.OPEN_IN_NEW,
+                                    icon=ft.Icons.OPEN_IN_NEW,
                                     width=130,
                                     height=40,
                                     bgcolor=ACCENT_SECONDARY,
-                                    color=Colors.WHITE,
+                                    color=ft.Colors.WHITE,
                                     url=pdf_file,
                                 ),
                             ],
@@ -1005,35 +1016,35 @@ def build_matlab_section():
         )
 
     certificate_rows = [
-        Row(
+        ft.Row(
             spacing=20,
-            vertical_alignment=CrossAxisAlignment.START,
+            vertical_alignment=ft.CrossAxisAlignment.START,
             controls=certificate_cards[index:index + 2],
         )
         for index in range(0, len(certificate_cards), 2)
     ]
     
-    return Container(
-        content=Column(
+    return ft.Container(
+        content=ft.Column(
             spacing=0,
             scroll="auto",
             controls=[
-                Container(
-                    padding=Padding.symmetric(vertical=40, horizontal=48),
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=40, horizontal=48),
                     bgcolor=BG_MAIN,
-                    content=Column(
+                    content=ft.Column(
                         spacing=12,
                         controls=[
-                            Text("MATLAB Certificates", size=36, weight="bold", color=TEXT_PRIMARY),
-                            Text(f"{len(certificates)} professional learning certifications",
+                            ft.Text("MATLAB Certificates", size=36, weight="bold", color=TEXT_PRIMARY),
+                            ft.Text(f"{len(certificates)} professional learning certifications",
                                  size=15, color=TEXT_SECONDARY),
-                            Divider(color=ACCENT_SECONDARY, height=2),
+                            ft.Divider(color=ACCENT_SECONDARY, height=2),
                         ]
                     )
                 ),
-                Container(
-                    padding=Padding.symmetric(vertical=0, horizontal=48),
-                    content=Column(
+                ft.Container(
+                    padding=ft.Padding.symmetric(vertical=0, horizontal=48),
+                    content=ft.Column(
                         spacing=20,
                         controls=certificate_rows,
                     ),
@@ -1050,7 +1061,7 @@ def build_matlab_section():
 # ============================================================================
 # MAIN APP
 # ============================================================================
-def main(page: Page):
+def main(page):
     """Main application function"""
     suppress_windows_connection_reset_noise()
     page.title = "Gerhard Mangundu | Project Portfolio"
@@ -1059,28 +1070,28 @@ def main(page: Page):
     page.scroll = "auto"
     page.bgcolor = BG_MAIN
     
-    pages_container = Container(expand=True)
+    pages_container = ft.Container(expand=True)
     current_page_index = 0
-    nav_buttons = Row(spacing=8)
+    nav_buttons = ft.Row(spacing=8)
 
     nav_items = [
-        ("Home", flet.Icons.HOME, 0),
-        ("Timeline", flet.Icons.TIMELINE, 1),
-        ("GitHub", flet.Icons.CODE, 2),
-        ("Blog", flet.Icons.ARTICLE, 3),
-        ("MATLAB", flet.Icons.SCHOOL, 4),
+        ("Home", ft.Icons.HOME, 0),
+        ("Timeline", ft.Icons.TIMELINE, 1),
+        ("GitHub", ft.Icons.CODE, 2),
+        ("Blog", ft.Icons.ARTICLE, 3),
+        ("MATLAB", ft.Icons.SCHOOL, 4),
     ]
 
     def build_nav_button(label, icon, index):
         is_active = current_page_index == index
-        return Button(
+        return ft.Button(
             label,
             icon=icon,
             height=46,
             width=150,
-            bgcolor=ACCENT_SECONDARY if is_active else Colors.TRANSPARENT,
-            color=Colors.WHITE if is_active else TEXT_SECONDARY,
-            style=ButtonStyle(text_style=TextStyle(size=13, weight="bold")),
+            bgcolor=ACCENT_SECONDARY if is_active else ft.Colors.TRANSPARENT,
+            color=ft.Colors.WHITE if is_active else TEXT_SECONDARY,
+            style=ft.ButtonStyle(text_style=ft.TextStyle(size=13, weight="bold")),
             on_click=lambda e, selected=index: navigate_to(selected),
         )
 
@@ -1106,19 +1117,19 @@ def main(page: Page):
         refresh_nav()
         page.update()
     
-    nav_bar = Container(
-        padding=Padding.symmetric(vertical=14, horizontal=20),
+    nav_bar = ft.Container(
+        padding=ft.Padding.symmetric(vertical=14, horizontal=20),
         bgcolor=ACCENT_PRIMARY,
-        border=Border(bottom=border_radius.BorderSide(1, Colors.WHITE10)),
-        content=Row(
+        border=ft.Border(bottom=ft.BorderSide(1, ft.Colors.WHITE10)),
+        content=ft.Row(
             alignment="space_between",
-            vertical_alignment=CrossAxisAlignment.CENTER,
+            vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
-                Column(
+                ft.Column(
                     spacing=2,
                     controls=[
-                        Text("Gerhard Mangundu", size=17, weight="bold", color=Colors.WHITE),
-                        Text("Portfolio — Firebase Lead", size=11, color=TEXT_SECONDARY),
+                        ft.Text("Gerhard Mangundu", size=17, weight="bold", color=ft.Colors.WHITE),
+                        ft.Text("Portfolio — Firebase Lead", size=11, color=TEXT_SECONDARY),
                     ],
                 ),
                 nav_buttons,
